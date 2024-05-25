@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Tickets</title>
+</head>
+<body>
+    <h1>My Tickets</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Sport</th>
+                <th>Event Date</th>
+                <th>Stadium</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ticket : ${tickets}">
+                <td th:text="${ticket.event.sport.name}"></td>
+                <td th:text="${#temporals.format(ticket.event.date, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${ticket.event.stadium.name}"></td>
+                <td th:text="${ticket.quantity}"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <a th:href="@{/sports}">Back to Sports</a>
+    
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Logout" />
+    </form>
+</body>
+</html>

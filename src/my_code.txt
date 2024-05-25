@@ -1,0 +1,2153 @@
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\my_code.txt
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\project_tree.txt
+src/
+    my_code.txt
+    project_tree.txt
+    main/
+        java/
+            com/
+                springBoot_examen/
+                    DataLoader.java
+                    EventController.java
+                    EventRestClient.java
+                    EventRestController.java
+                    GlobalExceptionHandler.java
+                    LoginController.java
+                    SecurityConfig.java
+                    SportController.java
+                    SpringBootExamenApplication.java
+                    TicketController.java
+            domain/
+                Event.java
+                MyUser.java
+                Role.java
+                Sport.java
+                Stadium.java
+                Ticket.java
+            perform/
+                PerformRestExample.java
+            repository/
+                EventRepository.java
+                SportRepository.java
+                StadiumRepository.java
+                TicketRepository.java
+                UserRepository.java
+            service/
+                MyUserDetailsService.java
+            utils/
+                InitFormatter.java
+                LocalDateTimeDeserializer.java
+                LocalDateTimeSerializer.java
+            validator/
+                EventValidation.java
+        resources/
+            application.properties
+            i18n/
+                messages.properties
+                messages_eng.properties
+                messages_nl.properties
+            static/
+                css/
+                    style.css
+            templates/
+                403.html
+                addEvent.html
+                buyTickets.html
+                events.html
+                hello.html
+                home.html
+                login.html
+                sports.html
+                userTickets.html
+    test/
+        java/
+            com/
+                springBoot_examen/
+                    EventControllerTest.java
+                    SpringBootExamenApplicationTests.java
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\com\springBoot_examen\DataLoader.java
+package com.springBoot_examen;
+
+import java.math.BigDecimal;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.annotation.JsonAppend.Attr;
+
+
+import domain.Event;
+import domain.MyUser;
+import domain.Role;
+import domain.Sport;
+import domain.Stadium;
+import repository.EventRepository;
+import repository.SportRepository;
+import repository.StadiumRepository;
+import repository.TicketRepository;
+import repository.UserRepository;
+
+
+@Component
+public class DataLoader implements CommandLineRunner {
+
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private EventRepository eventRepository;
+	@Autowired
+	private StadiumRepository stadiumRepository;
+	@Autowired
+	private TicketRepository ticketRepository;
+	@Autowired
+	private SportRepository sportRepository;
+
+	private PasswordEncoder encoder = new BCryptPasswordEncoder();
+
+	private static final String BCRYPTED_PASWOORD = "$2a$12$Vy.MTwPGc0CkwGOLeZ5s1eLl0nWXyL0p.L0UD3SQ99Uuug6YJq3SO";
+	// string 'root'
+
+	@Override
+	public void run(String... args) throws Exception {
+
+		final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+		var admin = MyUser.builder().username("admin").role(Role.ADMIN).password(BCRYPTED_PASWOORD).build();
+		var user = MyUser.builder().username("user").role(Role.USER).password(BCRYPTED_PASWOORD).build();
+		var test = MyUser.builder().username("test").role(Role.USER).password(BCRYPTED_PASWOORD).build();
+
+		userRepository.save(user);
+		userRepository.save(admin);
+		userRepository.save(test);
+
+		Sport sport1 = new Sport("Cycling");
+		Sport sport2 = new Sport("Basketball");
+		Sport sport3 = new Sport("Athletics");
+		Sport sport4 = new Sport("Swimming");
+		Sport sport5 = new Sport("Weightlifting");
+		Sport sport6 = new Sport("Football");
+
+		sportRepository.saveAll(Arrays.asList(sport1, sport2, sport3, sport4, sport5, sport6));
+
+		Stadium stadium1 = new Stadium("Stade de France");
+		Stadium stadium2 = new Stadium("Pierre Mauroy Stadium");
+		Stadium stadium3 = new Stadium("Parc des Princes");
+		Stadium stadium4 = new Stadium("Accor Arena");
+		Stadium stadium5 = new Stadium("Stade Jean-Bouin");
+
+		stadiumRepository.saveAll(Arrays.asList(stadium1, stadium2, stadium3, stadium4, stadium5));
+
+		 Event event1 = new Event(sport1, stadium1, LocalDateTime.of(2024, 7, 26, 10, 0), "Men's Road Race", null,
+				 12345, 13300, BigDecimal.valueOf(75.00), 49);
+
+		 Event event2 = new Event(sport2, stadium2, LocalDateTime.of(2024, 7, 28, 14, 0), "Women's Basketball", null,
+				 23456, 22500, BigDecimal.valueOf(50.00), 20);
+
+		 Event event3 = new Event(sport3, stadium3, LocalDateTime.of(2024, 8, 1, 9, 0), "Men's 100m", "Women's 400m",
+				 34567, 35500, BigDecimal.valueOf(100.00), 40);
+		 Event event4 = new Event(sport4, stadium4, LocalDateTime.of(2024, 8, 5, 16, 0), "Men's 200m Freestyle", null,
+				 45678, 46600, BigDecimal.valueOf(80.00), 10);
+		 Event event5 = new Event(sport5, stadium5, LocalDateTime.of(2024, 8, 10, 11, 0), "Women's 49kg", "Men's 61kg",
+				 56789, 57700, BigDecimal.valueOf(20.00),5);
+		 Event event6 = new Event(sport6, stadium1, LocalDateTime.of(2024, 8, 10, 11, 0), "France - The Netherlands", null,
+				 56780, 57700, BigDecimal.valueOf(140.00),30);
+
+
+	        eventRepository.saveAll(Arrays.asList(event1, event2, event3, event4, event5, event6));
+
+	}
+
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\com\springBoot_examen\EventController.java
+package com.springBoot_examen;
+
+import java.math.BigDecimal;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import domain.Event;
+import domain.MyUser;
+import domain.Ticket;
+import jakarta.validation.Valid;
+import repository.EventRepository;
+import repository.SportRepository;
+import repository.StadiumRepository;
+import repository.TicketRepository;
+import repository.UserRepository;
+
+
+@Controller
+@RequestMapping()
+public class EventController {
+	
+	@Autowired
+	private EventRepository eventRepository;
+	
+	@Autowired
+	private SportRepository sportRepository;
+	
+	@Autowired
+	private StadiumRepository stadiumRepository;
+	
+	@Autowired
+	private TicketRepository ticketRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	
+	@GetMapping("/events/new")
+	public String showAddEventForm(Model model) {
+	    model.addAttribute("event", new Event());
+	    model.addAttribute("sports", sportRepository.findAll());
+	    model.addAttribute("stadiums", stadiumRepository.findAll());
+	    return "addEvent";
+	}
+
+	@PostMapping("/events/new")
+	public String addEvent( @Valid @ModelAttribute("event") Event event, BindingResult result, Model model) {
+		 // Custom validation for Olympic Number 2
+	    if (event.getOlympicNumber2() < event.getOlympicNumber1() - 1000
+	            || event.getOlympicNumber2() > event.getOlympicNumber1() + 1000) {
+	        result.rejectValue("olympicNumber2", "error.event",
+	                "Olympic Number 2 must be within a range of 1000 from Olympic Number 1");
+	    }
+
+	    // Custom validation for disciplines
+	    if (event.getDiscipline1() != null && event.getDiscipline1().equals(event.getDiscipline2())) {
+	        result.rejectValue("discipline2", "error.event", "Disciplines must be different");
+	    }
+
+	    if (result.hasErrors()) {
+	        model.addAttribute("sports", sportRepository.findAll());
+	        model.addAttribute("stadiums", stadiumRepository.findAll());
+	        return "addEvent";
+	    }
+
+	    eventRepository.save(event);
+	    return "redirect:/sports/" + event.getSport().getId() + "/events";
+	}
+	
+	@GetMapping("/events/{eventId}/tickets")
+	public String showBuyTicketsForm(@PathVariable Long eventId, Model model) {
+	    Event event = eventRepository.findById(eventId)
+	            .orElseThrow(() -> new IllegalArgumentException("Invalid event ID: " + eventId));
+	    model.addAttribute("event", event);
+	    model.addAttribute("ticket", new Ticket());
+	    return "buyTickets";
+	}
+
+	@PostMapping("/events/{eventId}/tickets")
+	public String buyTickets(@PathVariable Long eventId, @ModelAttribute("ticket") Ticket ticket, BindingResult result, Model model, Authentication authentication) {
+	    Event event = eventRepository.findById(eventId)
+	            .orElseThrow(() -> new IllegalArgumentException("Invalid event ID: " + eventId));
+	    
+	    // Validate ticket quantity
+	    if (ticket.getQuantity() <= 0 || ticket.getQuantity() > 20) {
+	        result.rejectValue("quantity", "error.ticket", "Ticket quantity must be between 1 and 20");
+	    }
+	    
+	    // Check available seats
+	    if (ticket.getQuantity() > event.getNumberSeats()) {
+	        result.rejectValue("quantity", "error.ticket", "Not enough available seats");
+	    }
+	    
+	    if (result.hasErrors()) {
+	        model.addAttribute("event", event);
+	        return "buyTickets";
+	    }
+	    
+	    // Get the currently logged-in user
+	    String username = authentication.getName();
+	    MyUser user = userRepository.findByUsername(username);
+	   
+	    
+	    // Create and save the ticket
+	    ticket.setEvent(event);
+	    ticket.setUser(user);
+	    ticketRepository.save(ticket);
+	    
+	    // Update the available seats for the event
+	    event.setNumberSeats(event.getNumberSeats() - ticket.getQuantity());
+	    eventRepository.save(event);
+	    
+	    return "redirect:/sports/" + event.getSport().getId() + "/events";
+	}
+	
+
+
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\com\springBoot_examen\EventRestClient.java
+package com.springBoot_examen;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import domain.Event;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+@Component
+public class EventRestClient {
+
+    private final WebClient webClient;
+
+    public EventRestClient(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8080").build();
+    }
+
+    public Mono<Integer> getAvailableSeats(Long eventId) {
+        return webClient.get()
+                .uri("/events/{id}/seats", eventId)
+                .retrieve()
+                .bodyToMono(Integer.class);
+    }
+
+    public Flux<Event> getEventsBySportId(Long sportId) {
+        return webClient.get()
+                .uri("/events/sport/{sportId}", sportId)
+                .retrieve()
+                .bodyToFlux(Event.class);
+    }
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\com\springBoot_examen\EventRestController.java
+package com.springBoot_examen;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.el.stream.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import domain.Event;
+import repository.EventRepository;
+
+@RestController
+@RequestMapping(value = "/rest")
+public class EventRestController {
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Integer> getEventById(@PathVariable Long id) {
+        java.util.Optional<Event> event = eventRepository.findById(id);
+        if (event.isPresent()) {
+            return ResponseEntity.ok(event.get().getNumberSeats());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/sport/{sportId}")
+    public List<Event> getEventsBySportId(@PathVariable Long sportId) {
+        return eventRepository.findBySportIdOrderByDateAsc(sportId);
+    }
+    
+
+    
+ 
+
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\com\springBoot_examen\GlobalExceptionHandler.java
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\com\springBoot_examen\LoginController.java
+package com.springBoot_examen;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
+@Controller
+@RequestMapping("/login")
+public class LoginController {
+
+	@GetMapping
+	public String login(@RequestParam(value = "error", required = false) String error,
+			@RequestParam(value = "logout", required = false) String logout, Model model)
+	{
+
+		if (error != null) {
+
+			model.addAttribute("error", "Invalid username and password!");
+		}
+
+		if (logout != null) {
+
+			model.addAttribute("msg", "You've been logged out successfully.");
+		}
+		return "login";
+	}
+
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\com\springBoot_examen\SecurityConfig.java
+package com.springBoot_examen;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+
+import domain.Role;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+	
+	@Autowired
+	private UserDetailsService userDetailsService;
+
+	@Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
+                .authorizeHttpRequests(requests ->
+                        requests.requestMatchers("/login**").permitAll()
+                                .requestMatchers("/css/**").permitAll()
+                                .requestMatchers("/403**").permitAll()
+                                .requestMatchers("/rest/**").permitAll()
+                                .requestMatchers("/welcome/**").hasRole("USER")
+                                .requestMatchers("/events/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers("/events/new").hasRole("ADMIN")
+                                .requestMatchers("/tickets").hasRole("USER")
+                                
+                                .requestMatchers("/sports/**").hasAnyRole("USER", "ADMIN"))
+                .formLogin(form ->
+                        form.defaultSuccessUrl("/sports", true)
+                                .loginPage("/login")
+                                .usernameParameter("username").passwordParameter("password")
+                )
+                .exceptionHandling(handling -> handling.accessDeniedPage("/403"));
+
+        return http.build();
+    }
+    
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth)throws Exception {
+    	auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+    }
+ }
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\com\springBoot_examen\SportController.java
+package com.springBoot_examen;
+
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import domain.Event;
+import domain.Sport;
+import repository.EventRepository;
+import repository.SportRepository;
+
+@Controller
+@RequestMapping("/sports")
+public class SportController {
+	
+	@Autowired
+	private SportRepository sportRepository;
+	@Autowired
+	private EventRepository eventRepository;
+	
+	@GetMapping()
+	public String listSports(Model model) {
+		List<Sport> sports = (List<Sport>) sportRepository.findAll();
+		model.addAttribute("sports", sports);
+		return "sports";
+	}
+	
+	@GetMapping("/{sportId}/events")
+	public String listEventsBySport(@PathVariable Long sportId, Model model) {
+	    Sport sport = sportRepository.findById(sportId)
+	            .orElseThrow(() -> new IllegalArgumentException("Invalid sport ID: " + sportId));
+	    List<Event> events = eventRepository.findBySportOrderByDateAsc(sport);
+	    model.addAttribute("sport", sport);
+	    model.addAttribute("events", events);
+	    return "events";
+	}
+	
+
+
+	
+
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\com\springBoot_examen\SpringBootExamenApplication.java
+package com.springBoot_examen;
+
+import java.util.Locale;
+
+
+
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+
+import service.MyUserDetailsService;
+import validator.EventValidation;
+
+@SpringBootApplication
+@EnableJpaRepositories("repository")
+@EntityScan("domain")
+public class SpringBootExamenApplication implements WebMvcConfigurer {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootExamenApplication.class, args);
+	}
+	
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addRedirectViewController("/", "/events");
+		
+	}
+	
+	@Bean
+	UserDetailsService myUserDetailsService() {
+		return new MyUserDetailsService();
+	}
+
+	@Bean
+	EventValidation eventValidation() {
+		return new EventValidation();
+	}
+	
+
+
+	@Bean
+	MessageSource messageSource() {
+	    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+	    messageSource.setBasename("messages");
+	    messageSource.setDefaultEncoding("UTF-8");
+	    return messageSource;
+	}
+	
+	@Bean
+	LocaleResolver localeResolver() {
+	    SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+	    localeResolver.setDefaultLocale(Locale.ENGLISH);
+	    return localeResolver;
+	}
+
+
+    @Bean
+    LocaleChangeInterceptor localeChangeInterceptor() {
+        LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
+        lci.setParamName("lang");
+        return lci;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
+    }
+	
+	@Bean
+	public WebClient.Builder webClientBuilder() {
+	    return WebClient.builder();
+	}
+	
+	
+
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\com\springBoot_examen\TicketController.java
+package com.springBoot_examen;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import domain.MyUser;
+import domain.Ticket;
+import repository.TicketRepository;
+import repository.UserRepository;
+
+@Controller
+@RequestMapping()
+public class TicketController {
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private TicketRepository ticketRepository;
+	
+	@GetMapping("/tickets")
+	public String showUserTickets(Model model, Authentication authentication) {
+	    String username = authentication.getName();
+	    MyUser user = userRepository.findByUsername(username);
+
+	    List<Ticket> tickets = ticketRepository.findByUserOrderByEventSportNameAscEventDateAsc(user);
+	    model.addAttribute("tickets", tickets);
+
+	    return "userTickets";
+	}
+
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\domain\Event.java
+package domain;
+
+import java.io.Serializable;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+import org.springframework.format.annotation.NumberFormat;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import utils.LocalDateTimeDeserializer;
+import utils.LocalDateTimeSerializer;
+
+@Entity
+@Getter
+@NoArgsConstructor()
+@Setter
+@EqualsAndHashCode(exclude = "id")
+@ToString(exclude = "id")
+@AllArgsConstructor()
+@JsonPropertyOrder({"date", "numberSeats"})
+public class Event implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)    
+    private LocalDateTime date;
+    
+    private String discipline1;
+    private String discipline2;
+   
+
+    private int olympicNumber1;
+    private int olympicNumber2;
+    @NotNull(message = "{validation.ticketPrice.NotNull.message}")
+    @DecimalMin(value = "0.0", inclusive = false, message = "{validation.ticketPrice.DecimalMin.message}")
+    @DecimalMax(value = "150.0", inclusive = false, message = "{validation.ticketPrice.DecimalMax.message}")
+    private BigDecimal ticketPrice;
+    @NotNull(message = "{validation.numberSeats.NotNull.message}")
+    @Min(value = 1, message = "{validation.numberSeats.Min.message}")
+    @Max(value = 49, message = "{validation.numberSeats.Max.message}")
+    private int numberSeats;
+
+    @ManyToOne
+    private Sport sport;
+
+    @ManyToOne
+    private Stadium stadium;
+    
+    public Event(Sport sport, Stadium stadium, LocalDateTime date, String discipline1, String discipline2, int olympicNumber1, int olympicNumber2, BigDecimal ticketPrice,int numberSeats) {
+    	this.sport = sport;
+    	this.stadium = stadium;
+    	this.date = date;
+    	this.discipline1 = discipline1;
+    	this.discipline2 = discipline2;
+    	this.olympicNumber1 = olympicNumber1;
+    	this.olympicNumber2 = olympicNumber2;
+    	this.ticketPrice = ticketPrice;
+    	this.numberSeats = numberSeats;
+    	
+    }
+    
+    
+
+    
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\domain\MyUser.java
+package domain;
+
+import java.io.Serializable;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(of = "username")
+@Table(name = "User")
+public class MyUser implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String username;
+    @Column(nullable = false)
+    private String password;
+    
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    
+ 
+    
+
+	
+
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\domain\Role.java
+package domain;
+
+
+public enum Role {
+    ADMIN,
+    USER
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\domain\Sport.java
+package domain;
+
+import java.io.Serializable;
+import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@NoArgsConstructor()
+@Data
+public class Sport {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    
+    @OneToMany(mappedBy = "sport")
+    private List<Event> events;
+
+    public Sport(String name) {
+    	this.name = name;
+    }
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\domain\Stadium.java
+package domain;
+
+import java.io.Serializable;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@NoArgsConstructor()
+@Data
+public class Stadium implements Serializable {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+
+    public Stadium(String name) {
+    	this.name = name;
+    }
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\domain\Ticket.java
+package domain;
+
+import java.io.Serializable;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Data
+@NoArgsConstructor()
+public class Ticket implements Serializable {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private MyUser user;
+    
+    private int quantity;
+
+    // getters and setters
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\perform\PerformRestExample.java
+package perform;
+
+import java.util.Map;
+
+import org.springframework.web.reactive.function.client.WebClient;
+
+public class PerformRestExample {
+
+    private final String SERVER_URI = "http://localhost:8080/rest";
+
+    private WebClient webClient = WebClient.create();
+
+    public PerformRestExample() {
+        TestRestExample();
+    }
+
+    private void TestRestExample() {
+
+        System.out.println("\n--------GET WEDSTRIJD SUCCES--------");
+        getEvent(1L);
+        System.out.println("--------GET WEDSTRIJD FAIL--------");
+        try {
+            getEvent(59L);
+        } catch(Exception e) {
+            System.out.println(e.getMessage()); 
+        }
+
+    }
+
+    private void getEvent(Long id) {
+        webClient.get().uri(SERVER_URI + "/events/" + id).retrieve()
+            .bodyToMono(Map.class)
+            .doOnSuccess(getal -> System.out.println(getal))
+            .block();
+    }
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\repository\EventRepository.java
+package repository;
+
+import java.util.List;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import domain.Event;
+import domain.Sport;
+
+@Repository
+public interface EventRepository extends CrudRepository<Event, Long> {
+
+	List<Event> findBySportOrderByDateAsc(Sport sport);
+
+	Event findByOlympicNumber1(int olympicNumber1);
+
+	List<Event> findBySportIdOrderByDateAsc(Long sportId);
+
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\repository\SportRepository.java
+package repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import domain.Sport;
+
+@Repository
+public interface SportRepository extends CrudRepository<Sport, Long> {
+
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\repository\StadiumRepository.java
+package repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import domain.Stadium;
+
+@Repository
+public interface StadiumRepository extends CrudRepository<Stadium, Long>{
+
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\repository\TicketRepository.java
+package repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import domain.MyUser;
+import domain.Ticket;
+
+@Repository
+public interface TicketRepository extends CrudRepository<Ticket, Long>  {
+
+	List<Ticket> findByUserOrderByEventSportNameAscEventDateAsc(MyUser user);
+
+	int findByUserId(Long id);
+
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\repository\UserRepository.java
+package repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import domain.MyUser;
+
+@Repository
+public interface UserRepository extends CrudRepository<MyUser, Long> {
+
+	MyUser findByUsername(String username);
+
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\service\MyUserDetailsService.java
+package service;
+
+import java.util.Collection;
+import java.util.Collections;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import domain.Role;
+import domain.MyUser;
+import lombok.NoArgsConstructor;
+import repository.UserRepository;
+
+
+@Service
+@NoArgsConstructor
+public class MyUserDetailsService implements UserDetailsService {
+	
+	@Autowired
+	private UserRepository userRepository;
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+		MyUser user = userRepository.findByUsername(username);
+
+		if (user == null) {
+
+			throw new UsernameNotFoundException(username);
+		}
+		return new User(user.getUsername(), user.getPassword(), convertAuthorities(user.getRole()));
+	}
+	
+	private Collection<? extends GrantedAuthority> convertAuthorities(Role role) {
+		return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toString()));}
+
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\utils\InitFormatter.java
+package utils;
+
+import java.time.format.DateTimeFormatter;
+
+public interface InitFormatter {
+	DateTimeFormatter FORMATTER= DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\utils\LocalDateTimeDeserializer.java
+package utils;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+
+import static utils.InitFormatter.*;
+
+
+public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
+
+	@Override
+	public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt)
+			throws IOException, JsonProcessingException
+	{
+
+		String valueAsString = p.getValueAsString();
+
+		if (valueAsString == null || valueAsString.isBlank()) {
+
+			return null;
+		}
+		return LocalDateTime.parse(valueAsString, FORMATTER);
+	}
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\utils\LocalDateTimeSerializer.java
+package utils;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+
+import static utils.InitFormatter.*;
+
+public class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
+	@Override
+	public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+		gen.writeString(value.format(FORMATTER));
+		}
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\java\validator\EventValidation.java
+package validator;
+
+import java.time.LocalDateTime;
+
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+
+import domain.Event;
+
+
+public class EventValidation implements Validator {
+
+	@Override
+	public boolean supports(Class<?> clazz) {
+
+		return Event.class.isAssignableFrom(clazz);
+	}
+
+	@Override
+	public void validate(Object target, Errors errors) {
+
+		Event event = (Event) target;
+
+		ValidationUtils.rejectIfEmpty(errors, "date", "validation.date.NotNull.message");
+
+		if (event.getDate() != null) {
+
+			if (event.getDate().isBefore(LocalDateTime.now())) {
+
+				errors.rejectValue("date", "validation.date.Future.message");
+			}
+
+			if (event.getDate().isBefore(LocalDateTime.of(2024, 7, 26, 8, 0))
+					|| event.getDate().isAfter(LocalDateTime.of(2024, 8, 12, 0, 0))) {
+
+				errors.rejectValue("date", "validation.date.Range.message");
+			}
+
+			if (event.getDate().getHour() < 8) {
+
+				errors.rejectValue("date", "validation.date.Hour.message");
+			}
+		}
+
+		ValidationUtils.rejectIfEmpty(errors, "olympicNumber1", "validation.olympicNumber1.NotNull.message");
+
+		if (event.getOlympicNumber1() < 10000) {
+
+			errors.rejectValue("olympicNumber1", "validation.olympicNumber1.Min.message");
+		} else if (event.getOlympicNumber1() > 99999) {
+
+			errors.rejectValue("olympicNumber1", "validation.olympicNumber1.Max.message");
+		}
+
+		if (event.getOlympicNumber2() < event.getOlympicNumber1() - 1000
+				|| event.getOlympicNumber2() > event.getOlympicNumber1() + 1000) {
+
+			errors.rejectValue("olympicNumber2", "error.event",
+					"Olympic Number 2 must be within a range of 1000 from Olympic Number 1");
+		}
+
+		if (event.getDiscipline1() != null && event.getDiscipline1().equals(event.getDiscipline2())) {
+
+			errors.rejectValue("discipline2", "error.event", "Disciplines must be different");
+		}
+
+	}
+
+}
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\application.properties
+spring.application.name=springBoot_examen
+
+spring.datasource.url=jdbc:mysql://localhost:3306/ewd?useUnicode=true&useJBDCCompliantTimeZoneShift=true&useLegacyDateTimeCode=false&serverTimeZone=UTC
+spring.datasource.username=root
+spring.datasource.password=root
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+spring.jpa.hibernate.ddl-auto=create-drop
+
+spring.jms.cache.enabled=false
+
+spring.messages.basename=i18n/messages
+
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\i18n\messages.properties
+validation.date.NotNull.message=Date is required
+validation.date.Future.message=Date must be in the future
+validation.discipline1.NotBlank.message=Discipline 1 is required
+validation.olympicNumber1.NotNull.message=Olympic Number 1 is required
+validation.olympicNumber1.Min.message=Olympic Number 1 must be at least 10000
+validation.olympicNumber1.Max.message=Olympic Number 1 must be at most 99999
+validation.ticketPrice.NotNull.message=Ticket Price is required
+validation.ticketPrice.DecimalMin.message=Ticket Price must be greater than 0
+validation.ticketPrice.DecimalMax.message=Ticket Price must be less than 150
+validation.numberSeats.NotNull.message=Number of Seats is required
+validation.numberSeats.Min.message=Number of Seats must be at least 1
+validation.numberSeats.Max.message=Number of Seats must be at most 49
+validation.date.Hour.message=Event time must be after 8AM
+validation.date.Range.message=Event must be between July 26 and August 11
+
+error.generic=An error occurred. Please try again later.
+
+
+app.title=Olympic Games Paris 2024
+app.welcome=Welcome to the Olympic Games Paris 2024!
+app.sport.overview=Sports Overview
+app.event.overview=Events Overview
+app.buy.tickets=Buy Tickets
+app.my.tickets=My Tickets
+app.add.event=Add Event
+app.logout=Logout
+
+date.format=yyyy-MM-dd HH:mm
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\i18n\messages_eng.properties
+error.generic=An error occurred. Please try again later.
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\i18n\messages_nl.properties
+app.title=Olympische Spelen Parijs 2024
+app.welcome=Welkom bij de Olympische Spelen Parijs 2024!
+app.sport.overview=Sportoverzicht
+app.event.overview=Evenementenoverzicht
+app.buy.tickets=Tickets kopen
+app.my.tickets=Mijn tickets
+app.add.event=Evenement toevoegen
+app.logout=Uitloggen
+validation.date.Range.message=Evenement moet plaatsvinden tussen 26 juli en 11 augustus
+validation.date.NotNull.message=Datum is verplicht
+validation.date.Future.message=Datum moet in de toekomst liggen
+validation.date.Range.message=Evenement moet plaatsvinden tussen 26 juli en 11 augustus
+validation.date.Hour.message=Aanvangstijd evenement moet na 8 uur zijn
+validation.olympicNumber1.NotNull.message=Olympisch nummer 1 is verplicht
+validation.olympicNumber1.Min.message=Olympisch nummer 1 moet minstens 10000 zijn
+validation.olympicNumber1.Max.message=Olympisch nummer 1 mag maximaal 99999 zijn
+
+error.generic=An error occurred. Please try again later.
+
+validation.date.NotNull.message=Datum is verplicht
+validation.date.Future.message=Datum moet in de toekomst liggen
+
+date.format=dd-MM-yyyy HH:mm
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\static\css\style.css
+.error {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.msg {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+.button {
+    display: inline-block;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #555;
+}
+.event-details {
+    margin-bottom: 30px;
+}
+
+.event-details h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.event-details p {
+    margin-bottom: 5px;
+}
+
+.ticket-form {
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-group .error {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.back-link {
+    margin-top: 20px;
+}
+
+#login-box {
+    width: 300px;
+    padding: 20px;
+    margin: 100px auto;
+    background: #fff;
+    border-radius: 2px;
+    border: 1px solid #000;
+}
+/* Algemene stijlen (van toepassing op alle pagina's) */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+/* Navigatiestijlen (van toepassing op alle pagina's) */
+nav {
+    background-color: #333;
+    color: #fff;
+   padding: 10px 0; 
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 10px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+nav ul li a:hover {
+    background-color: #555;
+}
+
+/* Formulierstijlen (van toepassing op login.html, addEvent.html, buyTickets.html) */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="datetime-local"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+button[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Tabelstijlen (van toepassing op events.html, userTickets.html) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+}
+
+th {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Foutmeldingen (van toepassing op alle formulieren) */
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Sports pagina (sports.html) */
+.sports-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.sport-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    width: calc(33.33% - 10px);
+    box-sizing: border-box;
+    transition: transform 0.3s ease;
+}
+
+.sport-card:hover {
+    transform: translateY(-5px);
+}
+
+.sport-card h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.sport-card p {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.sport-card a {
+    display: inline-block;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.sport-card a:hover {
+    background-color: #555;
+}
+
+/* Events pagina (events.html) */
+.event-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-group .error {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+.events-container {
+    margin-top: 20px;
+}
+
+.event-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+}
+
+.event-card h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.event-card p {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.event-card .date {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.event-card .button {
+    display: inline-block;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.event-card .button:hover {
+    background-color: #555;
+}
+
+.logout-form {
+    display: inline;
+    
+}
+
+.logout-form button {
+    
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logout-form button:hover {
+    background-color: #555;
+}
+
+/* Login-pagina stijlen */
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-container label {
+    margin-bottom: 10px;
+}
+
+.login-container input {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.login-container button {
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-container button:hover {
+    background-color: #555;
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\templates\403.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Access is denied</title>
+</head>
+<body>
+	<h1>HTTP Status 403 - Access is denied</h1>
+
+	<form th:action="@{/logout}" method="post">
+		<input type="submit" value="Logout" /> 
+		<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+	</form>
+</body>
+</html>
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\templates\addEvent.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Event</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a th:href="@{/sports}">Sports</a></li>
+            <li><a th:href="@{/tickets}">My Tickets</a></li>
+            <li>
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Add Event</h1>
+        <form th:action="@{/events/new}" th:object="${event}" method="post" class="event-form">
+            <div class="form-group">
+                <label for="sport">Sport:</label>
+                <select th:field="*{sport.id}" id="sport" required>
+                    <option value="">Select Sport</option>
+                    <option th:each="sport : ${sports}" th:value="${sport.id}" th:text="${sport.name}"></option>
+                </select>
+                <span th:if="${#fields.hasErrors('sport')}" th:errors="*{sport}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="stadium">Stadium:</label>
+                <select th:field="*{stadium.id}" id="stadium" required>
+                    <option value="">Select Stadium</option>
+                    <option th:each="stadium : ${stadiums}" th:value="${stadium.id}" th:text="${stadium.name}"></option>
+                </select>
+                <span th:if="${#fields.hasErrors('stadium')}" th:errors="*{stadium}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="datetime-local" th:field="*{date}" id="date" required>
+                <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="discipline1">Discipline 1:</label>
+                <input type="text" th:field="*{discipline1}" id="discipline1" required>
+                <span th:if="${#fields.hasErrors('discipline1')}" th:errors="*{discipline1}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="discipline2">Discipline 2:</label>
+                <input type="text" th:field="*{discipline2}" id="discipline2">
+                <span th:if="${#fields.hasErrors('discipline2')}" th:errors="*{discipline2}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="olympicNumber1">Olympic Number 1:</label>
+                <input type="number" th:field="*{olympicNumber1}" id="olympicNumber1" required>
+                <span th:if="${#fields.hasErrors('olympicNumber1')}" th:errors="*{olympicNumber1}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="olympicNumber2">Olympic Number 2:</label>
+                <input type="number" th:field="*{olympicNumber2}" id="olympicNumber2" required>
+                <span th:if="${#fields.hasErrors('olympicNumber2')}" th:errors="*{olympicNumber2}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="ticketPrice">Ticket Price:</label>
+                <input type="number" step="0.01" th:field="*{ticketPrice}" id="ticketPrice" required>
+                <span th:if="${#fields.hasErrors('ticketPrice')}" th:errors="*{ticketPrice}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="numberSeats">Number of Seats:</label>
+                <input type="number" th:field="*{numberSeats}" id="numberSeats" required>
+                <span th:if="${#fields.hasErrors('numberSeats')}" th:errors="*{numberSeats}" class="error"></span>
+            </div>
+            <button type="submit" class="btn">Add Event</button>
+        </form>
+    </div>
+</body>
+</html>
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\templates\buyTickets.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Buy Tickets</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a th:href="@{/sports}">Sports</a></li>
+            <li><a th:href="@{/tickets}">My Tickets</a></li>
+            <li>
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Buy Tickets</h1>
+        <div class="event-details">
+            <h2 th:text="${event.sport.name} + ' - ' + ${event.stadium.name}"></h2>
+            <p><strong>Date:</strong> <span th:text="${#temporals.format(event.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+            <p><strong>Available Seats:</strong> <span th:text="${event.numberSeats}"></span></p>
+            <p><strong>Ticket Price:</strong> <span th:text="${event.ticketPrice}"></span></p>
+        </div>
+
+        <form th:action="@{/events/{eventId}/tickets(eventId=${event.id})}" th:object="${ticket}" method="post" class="ticket-form">
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" th:field="*{quantity}" id="quantity" required>
+                <span th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}" class="error"></span>
+            </div>
+            <button type="submit" class="btn">Buy Tickets</button>
+        </form>
+
+        <div class="back-link">
+            <a th:href="@{/sports/{sportId}/events(sportId=${event.sport.id})}">Back to Events</a>
+        </div>
+    </div>
+</body>
+</html>
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\templates\events.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Events</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a th:href="@{/sports}">Sports</a></li>
+            <li> <a th:href="@{/tickets}" th:if="${not #lists.isEmpty(tickets)}">View My Tickets</a></li>
+            <li><a th:href="@{/logout}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1 th:text="${sport.name} + ' Events'"></h1>
+
+        <div class="events-container">
+        <div th:if="${success}" class="success-message">
+    Successfully bought <span th:text="${success}"></span> tickets.
+</div>
+            <div class="event-card" th:each="event : ${events}">
+                
+                <p>
+                    <strong>Stadium:</strong> <span th:text="${event.stadium.name}"></span><br>
+                    <strong>Disciplines:</strong>
+                    <span th:text="${event.discipline1}"></span>
+                    <span th:if="${event.discipline2}" th:text="', ' + ${event.discipline2}"></span>
+                </p>
+                <p class="date" th:text="${#temporals.format(ticket.event.date, #messages.msg('date.format'))}"></p>
+                <p>
+                    <strong>Available Spots:</strong> <span th:text="${event.numberSeats}"></span><br>
+                    <strong>Ticket Price:</strong>
+                    <span th:if="${event.numberSeats > 0 or #authorization.expression('hasRole(''ADMIN'')')}">
+                        <span th:text="${#numbers.formatDecimal(event.ticketPrice, 1, 'COMMA', 2, 'COMMA')}"></span>
+                    </span>
+                    <span th:unless="${event.numberSeats > 0 or #authorization.expression('hasRole(''ADMIN'')')}">
+                        Sold Out
+                    </span>
+                </p>
+                <a class="button" th:if="${event.numberSeats > 0}" th:href="@{/events/{eventId}/tickets(eventId=${event.id})}">Buy Tickets</a>
+            </div>
+        </div>
+
+        <div sec:authorize="hasRole('ADMIN')">
+            <a class="button" th:href="@{/events/new}">Add Event</a>
+        </div>
+    </div>
+</body>
+</html>
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\templates\hello.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+	
+	<h2 th:text="|Hello ${username}|"></h2>
+
+
+	<form th:action="@{/logout}" method="post">
+		<input type="submit" value="Logout" /> 
+		<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+	</form>
+
+</body>
+</html>
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\templates\home.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Olympische Spelen</title>
+</head>
+<body>
+    <h1>Olympische Spelen</h1>
+    <ul>
+        <li th:each="sport : ${sports}">
+            <a th:href="@{/events/{sportId}(sportId=${sport.id})}" th:text="${sport.name}">Sport</a>
+        </li>
+    </ul>
+</body>
+</html>
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\templates\login.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Login Page</title>
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body onload='document.loginForm.username.focus();'>
+	
+
+	<div id="login-box">
+
+		<h3>Login with Username and Password</h3>
+
+		<div th:if="${error}" class="error" th:text="${error}"></div>
+
+		<div th:if="${msg}" class="msg" th:text="${msg}"></div>
+
+		<form th:action="@{/login}" method="post">
+			<table>
+				<tr>
+					<td>User:</td>
+					<td><input type='text' name='username' value=''></td>
+				</tr>
+				<tr>
+					<td>Password:</td>
+					<td><input type='password' name='password' /></td>
+				</tr>
+				<tr>
+					<td colspan='2'><button name="submit" type="submit">Login</button></td>
+				</tr>
+			</table>
+
+			<input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+
+		</form>
+	</div>
+
+</body>
+</html>
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\templates\sports.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sports Overview</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a th:href="@{/sports}">Sports</a></li>
+            <li> <a th:href="@{/tickets}" th:if="${not #lists.isEmpty(tickets)}">View My Tickets</a></li>
+             <li>
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit">Logout</button>
+                </form>            </li>
+                
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <h1 th:text="#{app.title}"></h1>
+
+        <div class="sports-container">
+            <div class="sport-card" th:each="sport : ${sports}">
+                <h2 th:text="${sport.name}"></h2>
+                <p>Discover the exciting events and competitions in <span th:text="${sport.name}"></span>.</p>
+                <a th:href="@{/sports/{sportId}/events(sportId=${sport.id})}">View Events</a>
+            </div>
+        </div>
+
+        <div sec:authorize="hasRole('USER')" th:if="${not #lists.isEmpty(tickets)}">
+            <a class="button" href="/tickets" th:text="#{app.buy.tickets}"></a>
+        </div>
+    </div>
+</body>
+</html>
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\main\resources\templates\userTickets.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Tickets</title>
+</head>
+<body>
+    <h1>My Tickets</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Sport</th>
+                <th>Event Date</th>
+                <th>Stadium</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ticket : ${tickets}">
+                <td th:text="${ticket.event.sport.name}"></td>
+                <td th:text="${#temporals.format(ticket.event.date, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${ticket.event.stadium.name}"></td>
+                <td th:text="${ticket.quantity}"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <a th:href="@{/sports}">Back to Sports</a>
+    
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Logout" />
+    </form>
+</body>
+</html>
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\test\java\com\springBoot_examen\EventControllerTest.java
+package com.springBoot_examen;
+
+
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import domain.Event;
+import domain.Sport;
+import domain.Stadium;
+import repository.EventRepository;
+import repository.SportRepository;
+import repository.StadiumRepository;
+import repository.TicketRepository;
+import repository.UserRepository;
+
+@WebMvcTest(EventController.class)
+@Import(SecurityConfig.class)
+@AutoConfigureMockMvc
+class EventControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private EventRepository eventRepository;
+
+    @MockBean
+    private SportRepository sportRepository;
+
+    @MockBean
+    private StadiumRepository stadiumRepository;
+
+    @MockBean
+    private TicketRepository ticketRepository;
+
+    @MockBean
+    private UserRepository userRepository;
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void testShowAddEventForm() throws Exception {
+        mockMvc.perform(get("/events/new"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("addEvent"))
+                .andExpect(model().attributeExists("event", "sports", "stadiums"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void testAddEventSuccess() throws Exception {
+        Event event = new Event();
+        event.setSport(new Sport());
+        event.setStadium(new Stadium());
+        event.setDate(LocalDateTime.now().plusDays(1));
+        event.setDiscipline1("Discipline 1");
+        event.setOlympicNumber1(12345);
+        event.setOlympicNumber2(13000);
+        event.setTicketPrice(BigDecimal.valueOf(50));
+        event.setNumberSeats(100);
+
+        when(eventRepository.save(any(Event.class))).thenReturn(event);
+
+        mockMvc.perform(post("/events/new")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("sport.id", "1")
+                .param("stadium.id", "1")
+                .param("date", event.getDate().toString())
+                .param("discipline1", event.getDiscipline1())
+                .param("olympicNumber1", String.valueOf(event.getOlympicNumber1()))
+                .param("olympicNumber2", String.valueOf(event.getOlympicNumber2()))
+                .param("ticketPrice", event.getTicketPrice().toString())
+                .param("numberSeats", String.valueOf(event.getNumberSeats())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/sports/1/events"));
+
+        verify(eventRepository, times(1)).save(any(Event.class));
+    }
+}
+// Filename: C:/Users/quint/Documents/School/TI2/Semester 2/EWD/Oefeningen/springBoot_examen/src\test\java\com\springBoot_examen\SpringBootExamenApplicationTests.java
+package com.springBoot_examen;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class SpringBootExamenApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
+

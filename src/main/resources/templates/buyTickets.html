@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Buy Tickets</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a th:href="@{/sports}">Sports</a></li>
+            <li><a th:href="@{/tickets}">My Tickets</a></li>
+            <li>
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Buy Tickets</h1>
+        <div class="event-details">
+            <h2 th:text="${event.sport.name} + ' - ' + ${event.stadium.name}"></h2>
+            <p><strong>Date:</strong> <span th:text="${#temporals.format(event.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+            <p><strong>Available Seats:</strong> <span th:text="${event.numberSeats}"></span></p>
+            <p><strong>Ticket Price:</strong> <span th:text="${event.ticketPrice}"></span></p>
+        </div>
+
+        <form th:action="@{/events/{eventId}/tickets(eventId=${event.id})}" th:object="${ticket}" method="post" class="ticket-form">
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" th:field="*{quantity}" id="quantity" required>
+                <span th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}" class="error"></span>
+            </div>
+            <button type="submit" class="btn">Buy Tickets</button>
+        </form>
+
+        <div class="back-link">
+            <a th:href="@{/sports/{sportId}/events(sportId=${event.sport.id})}">Back to Events</a>
+        </div>
+    </div>
+</body>
+</html>

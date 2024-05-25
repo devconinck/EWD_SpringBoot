@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Olympische Spelen</title>
+</head>
+<body>
+    <h1>Olympische Spelen</h1>
+    <ul>
+        <li th:each="sport : ${sports}">
+            <a th:href="@{/events/{sportId}(sportId=${sport.id})}" th:text="${sport.name}">Sport</a>
+        </li>
+    </ul>
+</body>
+</html>

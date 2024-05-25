@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Event</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a th:href="@{/sports}">Sports</a></li>
+            <li><a th:href="@{/tickets}">My Tickets</a></li>
+            <li>
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Add Event</h1>
+        <form th:action="@{/events/new}" th:object="${event}" method="post" class="event-form">
+            <div class="form-group">
+                <label for="sport">Sport:</label>
+                <select th:field="*{sport.id}" id="sport" required>
+                    <option value="">Select Sport</option>
+                    <option th:each="sport : ${sports}" th:value="${sport.id}" th:text="${sport.name}"></option>
+                </select>
+                <span th:if="${#fields.hasErrors('sport')}" th:errors="*{sport}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="stadium">Stadium:</label>
+                <select th:field="*{stadium.id}" id="stadium" required>
+                    <option value="">Select Stadium</option>
+                    <option th:each="stadium : ${stadiums}" th:value="${stadium.id}" th:text="${stadium.name}"></option>
+                </select>
+                <span th:if="${#fields.hasErrors('stadium')}" th:errors="*{stadium}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="datetime-local" th:field="*{date}" id="date" required>
+                <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="discipline1">Discipline 1:</label>
+                <input type="text" th:field="*{discipline1}" id="discipline1" required>
+                <span th:if="${#fields.hasErrors('discipline1')}" th:errors="*{discipline1}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="discipline2">Discipline 2:</label>
+                <input type="text" th:field="*{discipline2}" id="discipline2">
+                <span th:if="${#fields.hasErrors('discipline2')}" th:errors="*{discipline2}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="olympicNumber1">Olympic Number 1:</label>
+                <input type="number" th:field="*{olympicNumber1}" id="olympicNumber1" required>
+                <span th:if="${#fields.hasErrors('olympicNumber1')}" th:errors="*{olympicNumber1}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="olympicNumber2">Olympic Number 2:</label>
+                <input type="number" th:field="*{olympicNumber2}" id="olympicNumber2" required>
+                <span th:if="${#fields.hasErrors('olympicNumber2')}" th:errors="*{olympicNumber2}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="ticketPrice">Ticket Price:</label>
+                <input type="number" step="0.01" th:field="*{ticketPrice}" id="ticketPrice" required>
+                <span th:if="${#fields.hasErrors('ticketPrice')}" th:errors="*{ticketPrice}" class="error"></span>
+            </div>
+            <div class="form-group">
+                <label for="numberSeats">Number of Seats:</label>
+                <input type="number" th:field="*{numberSeats}" id="numberSeats" required>
+                <span th:if="${#fields.hasErrors('numberSeats')}" th:errors="*{numberSeats}" class="error"></span>
+            </div>
+            <button type="submit" class="btn">Add Event</button>
+        </form>
+    </div>
+</body>
+</html>
